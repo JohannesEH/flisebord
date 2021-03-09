@@ -42,13 +42,11 @@
 
                     const envMap = pmremGenerator.fromEquirectangular(texture).texture;
 
-                    scene.background = envMap;
+                    scene.background = null;
                     scene.environment = envMap;
 
                     texture.dispose();
                     pmremGenerator.dispose();
-
-                    //render();
 
                     // model
 
@@ -119,14 +117,13 @@
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
 
-            composer.setSize(window.innerWidth, window.innerHeight);
-            //render();
+            renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
         function animate() {
+            requestAnimationFrame(animate);
             controls.update();
             composer.render(scene, camera);
-            requestAnimationFrame(animate);
         }
     </script>
 </body>
