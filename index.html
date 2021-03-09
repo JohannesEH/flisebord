@@ -31,7 +31,7 @@
             document.body.appendChild(container);
 
             camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.25, 20);
-            camera.position.set(- 1.8, 0.6, 2.7);
+            camera.position.set(- 1.7, 1.6, 3.1);
 
             scene = new THREE.Scene();
 
@@ -50,34 +50,51 @@
 
                     // model
 
-                    // use of RoughnessMipmapper is optional
-                    const roughnessMipmapper = new RoughnessMipmapper(renderer);
+                    const length = 1, width = 1;
 
-                    const loader = new GLTFLoader().setPath('models/gltf/DamagedHelmet/glTF/');
-                    loader.load('DamagedHelmet.gltf', function (gltf) {
+                    const shape = new THREE.Shape();
+                    shape.moveTo(0, 0);
+                    shape.lineTo(0, width);
+                    shape.lineTo(length, width);
+                    shape.lineTo(length, 0);
+                    shape.lineTo(0, 0);
+
+                    const extrudeSettings = {
+                        steps: 1,
+                        depth: 1,
+                        bevelEnabled: true,
+                        bevelThickness: .01,
+                        bevelSize: .01,
+                        bevelOffset: 0,
+                        bevelSegments: 5
+                    };
+
+                    const material = new THREE.MeshPhysicalMaterial({ color: 0x336633, clearcoat: 1, clearcoatRoughness: 0.07, shading: THREE.SmoothShading });
+
+                    // const geometry = new THREE.BoxGeometry(2, 1, 1);
+                    // const material = new THREE.MeshPhysicalMaterial({ color: 0x228822, clearcoat: 1, clearcoatRoughness: 0.07 });
+                    // const cube = new THREE.Mesh(geometry, material);
+                    // scene.add(cube);
+
+                    const loader = new GLTFLoader().setPath('models/gltf/tile/glTF/');
+                    loader.load('tile.gltf', function (gltf) {
 
                         gltf.scene.traverse(function (child) {
 
                             if (child.isMesh) {
 
                                 // TOFIX RoughnessMipmapper seems to be broken with WebGL 2.0
-                                roughnessMipmapper.generateMipmaps(child.material);
-
+                                //roughnessMipmapper.generateMipmaps(child.material);
+                                child.material = material;
+                                child.geometry.scale(10, 10, 10);
                             }
-
                         });
 
                         scene.add(gltf.scene);
-
-                        roughnessMipmapper.dispose();
-
-                        //render();
-
                     });
-
                 });
 
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setPixelRatio(window.devicePixelRatio);
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -105,7 +122,7 @@
             controls = new OrbitControls(camera, renderer.domElement);
             controls.minDistance = 2;
             controls.maxDistance = 10;
-            controls.target.set(0, 0, - 0.2);
+            controls.target.set(0, 0, 0);
             controls.enableDamping = true;
 
             window.addEventListener('resize', onWindowResize);
