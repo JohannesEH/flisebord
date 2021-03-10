@@ -1,6 +1,15 @@
 body, head {
     margin: 20px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    /* background: rgb(2,0,36);
-    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 100%); */
+    font-size: 36pt;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    text-align: center;
+}
+
+#table3d {
+    margin-top: -100px;
+    width: 500px;
+    height: 500px;
 }
