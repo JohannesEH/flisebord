@@ -9,6 +9,10 @@
 </head>
 
 <body>
+    <div>
+        <h1>Flisebord</h1>
+        <canvas id="3d_canvas" style="width: 500px; height: 500px"></canvas>
+    </div>
     <script type="module">
 
         import * as THREE from 'https://unpkg.com/three@0.126.1/build/three.module.js';
@@ -26,11 +30,10 @@
         init();
 
         function init() {
+            const container = document.getElementById('3d_canvas');
+            const size = container.getBoundingClientRect();
 
-            const container = document.createElement('div');
-            document.body.appendChild(container);
-
-            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.25, 20);
+            camera = new THREE.PerspectiveCamera(45, size.width / size.height, 0.25, 20);
             camera.position.set(- 1.7, 1.6, 3.1);
 
             scene = new THREE.Scene();
@@ -38,7 +41,7 @@
             new RGBELoader()
                 .setDataType(THREE.UnsignedByteType)
                 .setPath('hdr/')
-                .load('large_corridor_4k.hdr', function (texture) {
+                .load('large_corridor_2k.hdr', function (texture) {
 
                     const envMap = pmremGenerator.fromEquirectangular(texture).texture;
 
@@ -76,8 +79,8 @@
                     // const cube = new THREE.Mesh(geometry, material);
                     // scene.add(cube);
 
-                    const loader = new GLTFLoader().setPath('models/gltf/tile/glTF/');
-                    loader.load('tile.gltf', function (gltf) {
+                    const loader = new GLTFLoader().setPath('models/gltf/tile_table/gltf/');
+                    loader.load('tile_table_2x2x4_10cm.gltf', function (gltf) {
 
                         gltf.scene.traverse(function (child) {
 
@@ -85,8 +88,8 @@
 
                                 // TOFIX RoughnessMipmapper seems to be broken with WebGL 2.0
                                 //roughnessMipmapper.generateMipmaps(child.material);
-                                child.material = material;
-                                child.geometry.scale(10, 10, 10);
+                                //child.material = material;
+                                child.geometry.translate(0, -.5, 0)//.scale(10, 10, 10);
                             }
                         });
 
@@ -94,13 +97,13 @@
                     });
                 });
 
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, canvas: container });
             renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setSize(size.width, size.height);
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
             renderer.toneMappingExposure = 1;
             renderer.outputEncoding = THREE.sRGBEncoding;
-            container.appendChild(renderer.domElement);
+            //container.appendChild(renderer.domElement);
 
             composer = new EffectComposer(renderer);
 
@@ -120,10 +123,14 @@
             pmremGenerator.compileEquirectangularShader();
 
             controls = new OrbitControls(camera, renderer.domElement);
+            controls.autoRotate = true;
+            controls.autoRotateSpeed = -1;
             controls.minDistance = 2;
             controls.maxDistance = 10;
             controls.target.set(0, 0, 0);
             controls.enableDamping = true;
+            controls.enablePan = false;
+            controls.enableZoom = false;
 
             window.addEventListener('resize', onWindowResize);
 
@@ -131,10 +138,10 @@
         }
 
         function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
+            // camera.aspect = window.innerWidth / window.innerHeight;
+            // camera.updateProjectionMatrix();
 
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            // renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
         function animate() {
